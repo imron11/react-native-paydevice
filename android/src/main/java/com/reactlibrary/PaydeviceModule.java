@@ -1,5 +1,7 @@
 package com.reactlibrary;
 
+import android.util.Log;
+
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
@@ -14,6 +16,8 @@ import com.paydevice.smartpos.sdk.printer.SerialPortPrinter;
 import com.paydevice.smartpos.sdk.cashdrawer.CashDrawer;
 
 public class PaydeviceModule extends ReactContextBaseJavaModule {
+
+    private static String TAG = "PayDevice";
 
     private final ReactApplicationContext reactContext;
 
@@ -38,6 +42,6 @@ public class PaydeviceModule extends ReactContextBaseJavaModule {
 
     @ReactMethod
     public void testPrinter() {
-
+        Log.v(TAG, "Oke");
     }
 }
