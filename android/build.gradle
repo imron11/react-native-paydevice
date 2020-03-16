@@ -73,7 +73,6 @@ repositories {
 
 dependencies {
     //noinspection GradleDynamicVersion
-    implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation files('libs/paydevice-smartpos-sdk.jar')
     implementation files('libs/zbar.jar')
     implementation 'com.facebook.react:react-native:+'  // From node_modules
