@@ -21,7 +21,7 @@ public class PaydeviceModule extends ReactContextBaseJavaModule {
 
     private static String TAG = "PayDevice";
     private PosSalesSlip mTemplate = null;
-
+    private PrinterManager mPrinterManager = null;
 
     private final ReactApplicationContext reactContext;
 
@@ -46,6 +46,9 @@ public class PaydeviceModule extends ReactContextBaseJavaModule {
 
     @ReactMethod
     public void testPrinter() {
+        if (mTemplate == null) {
+            mTemplate = new PosSalesSlip(reactContext, mPrinterManager);
+        }
         int err = mTemplate.prepare();
         Log.v(TAG, "prepare " + String.valueOf(err));
     }
