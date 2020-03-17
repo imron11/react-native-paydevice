@@ -16,8 +16,8 @@ public class PosSalesSlip {
     private Context mContext;
 
     public PosSalesSlip(Context context, PrinterManager printer) {
-        mContext = context;
-        mPrinterManager = printer;
+        this.mContext = context;
+        this.mPrinterManager = printer;
     }
 
     // prepare printer

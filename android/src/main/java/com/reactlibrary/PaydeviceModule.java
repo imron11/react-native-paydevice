@@ -44,10 +44,38 @@ public class PaydeviceModule extends ReactContextBaseJavaModule {
         callback.invoke("Received numberArgument: " + numberArgument + " stringArgument: " + stringArgument);
     }
 
+    private void initDevice() {
+        //check printer for different models
+        //Built-in serialport printer: FH070H-A,FH100H-A,FH070A2
+        //Built-in usb printer:        FH116A3
+
+        if (mPrinter == null) {
+            //if usb printer no found then try serialport printer
+            try {
+                //80mm USB printer
+                mPrinter = new UsbPrinter(this.reactContext);
+                mPrinter.selectBuiltInPrinter();
+                mPrinter.open();
+                mPrinter.close();
+            } catch (SmartPosException e) {
+                Log.d(TAG,"no usb printer,try serialport printer");
+                //58mm serialport printer
+                mPrinter = new SerialPortPrinter();
+                mPrinter.selectBuiltInPrinter();
+            }
+
+            mPrinterManager = new PrinterManager(mPrinter,
+                    (mPrinter.getType() == PrinterManager.PRINTER_TYPE_USB)
+                            ? PrinterManager.TYPE_PAPER_WIDTH_80MM
+                            : PrinterManager.TYPE_PAPER_WIDTH_58MM);
+        }
+    }
+
     @ReactMethod
     public void testPrinter() {
+        initDevice();
         if (mTemplate == null) {
-            mTemplate = new PosSalesSlip(reactContext, mPrinterManager);
+            mTemplate = new PosSalesSlip(this.reactContext, mPrinterManager);
         }
         int err = mTemplate.prepare();
         Log.v(TAG, "prepare " + String.valueOf(err));
