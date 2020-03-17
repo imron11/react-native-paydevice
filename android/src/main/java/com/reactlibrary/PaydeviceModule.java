@@ -15,9 +15,13 @@ import com.paydevice.smartpos.sdk.printer.UsbPrinter;
 import com.paydevice.smartpos.sdk.printer.SerialPortPrinter;
 import com.paydevice.smartpos.sdk.cashdrawer.CashDrawer;
 
+import com.reactlibrary.printer.PosSalesSlip;
+
 public class PaydeviceModule extends ReactContextBaseJavaModule {
 
     private static String TAG = "PayDevice";
+    private PosSalesSlip mTemplate = null;
+
 
     private final ReactApplicationContext reactContext;
 
@@ -42,6 +46,7 @@ public class PaydeviceModule extends ReactContextBaseJavaModule {
 
     @ReactMethod
     public void testPrinter() {
-        Log.v(TAG, "Oke");
+        int err = mTemplate.prepare();
+        Log.v(TAG, "prepare " + String.valueOf(err));
     }
 }
