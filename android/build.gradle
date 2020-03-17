@@ -74,7 +74,6 @@ repositories {
 dependencies {
     //noinspection GradleDynamicVersion
     implementation fileTree(include: ['*.jar'], dir: 'libs')
-    implementation group: 'com.android.support', name: 'support-v4', version: '27.0.0'
     implementation 'com.facebook.react:react-native:+'  // From node_modules
 }
 
