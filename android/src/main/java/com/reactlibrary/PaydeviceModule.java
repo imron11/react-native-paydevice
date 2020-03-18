@@ -126,8 +126,23 @@ public class PaydeviceModule extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
+    public void setMainLogoToPrint(String mainLogoToPrint){
+        mTemplate.setMainLogoToPrint(mainLogoToPrint);
+    }
+
+    @ReactMethod
     public void setTextToPrint(String txtToPrint){
         mTemplate.setTxtToPrint(txtToPrint);
+    }
+
+    @ReactMethod
+    public void setFooterLogoToPrint(String footerLogoToPrint) {
+        mTemplate.setFooterLogoToPrint(footerLogoToPrint);
+    }
+
+    @ReactMethod
+    public void setTxtFooterToPrint(String txtFooterToPrint) {
+        mTemplate.setTxtFooterToPrint(txtFooterToPrint);
     }
 
     @ReactMethod
