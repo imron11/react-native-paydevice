@@ -72,12 +72,12 @@ public class PaydeviceModule extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-    public void testPrinter() {
+    public void checkPrinter(Callback callback) {
         initDevice();
         if (mTemplate == null) {
             mTemplate = new PosSalesSlip(this.reactContext, mPrinterManager);
         }
         int err = mTemplate.prepare();
-        Log.v(TAG, "prepare " + String.valueOf(err));
+        callback.invoke(err);
     }
 }
