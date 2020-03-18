@@ -146,7 +146,7 @@ public class PaydeviceModule extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-    public void  PrintText() {
+    public void  doPrint(Callback callback) {
         initDevice();
         if (mTemplate == null) {
             mTemplate = new PosSalesSlip(this.reactContext, mPrinterManager);
@@ -156,7 +156,8 @@ public class PaydeviceModule extends ReactContextBaseJavaModule {
             mPrintTask = new PrintTask();
             mPrintTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, mTemplate);
         } else {
-            Log.v(TAG, String.valueOf(err));
+            callback.invoke(err);
         }
+        callback.invoke(err);
     }
 }
