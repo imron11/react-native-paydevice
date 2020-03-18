@@ -22,7 +22,10 @@ public class PosSalesSlip {
     private Context mContext;
 
     // var text to print
+    private String mainLogoToPrint;
     private String txtToPrint;
+    private String footerLogoToPrint;
+    private String txtFooterToPrint;
 
     public PosSalesSlip(Context context, PrinterManager printer) {
         this.mContext = context;
@@ -149,12 +152,40 @@ public class PosSalesSlip {
         }
     }
 
-    //getter and setter text to print
+    //getter and setter to print
+    //main logo
+    public void setMainLogoToPrint(String str) {
+        this.mainLogoToPrint = str;
+    }
+
+    public  String  getMainLogoToPrint() {
+        return mainLogoToPrint;
+    }
+
+    //main text
     public void setTxtToPrint(String str) {
         this.txtToPrint = str;
     }
 
     public String getTxtToPrint() {
         return txtToPrint;
+    }
+
+    //footer logo
+    public void setFooterLogoToPrint(String str) {
+        this.footerLogoToPrint = str;
+    }
+
+    public String getFooterLogoToPrint() {
+        return  footerLogoToPrint;
+    }
+
+    //footer text
+    public void  setTxtFooterToPrint(String str) {
+        this.txtFooterToPrint = txtFooterToPrint;
+    }
+
+    public String getTxtFooterToPrint() {
+        return txtFooterToPrint;
     }
 }

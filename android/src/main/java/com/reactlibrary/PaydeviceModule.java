@@ -126,16 +126,18 @@ public class PaydeviceModule extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-    public void  PrintText(String txtToPrint) {
+    public void setTextToPrint(String txtToPrint){
+        mTemplate.setTxtToPrint(txtToPrint);
+    }
+
+    @ReactMethod
+    public void  PrintText() {
         initDevice();
         if (mTemplate == null) {
             mTemplate = new PosSalesSlip(this.reactContext, mPrinterManager);
         }
         int err = mTemplate.prepare();
         if (err == 0) {
-
-            mTemplate.setTxtToPrint(txtToPrint);
-
             mPrintTask = new PrintTask();
             mPrintTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, mTemplate);
         } else {
