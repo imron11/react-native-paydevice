@@ -1,5 +1,8 @@
 package com.reactlibrary;
 
+import android.os.AsyncTask;
+import android.os.Bundle;
+import android.os.Message;
 import android.util.Log;
 
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -26,7 +29,18 @@ public class PaydeviceModule extends ReactContextBaseJavaModule {
     private final ReactApplicationContext reactContext;
 
     // PayDevice Variable
+    private PrintTask mPrintTask = null;
     private Printer mPrinter = null;
+
+    private static final String KEY_PRINTING_RESULT = "printing_result";
+    private static final String KEY_PRINTER_UPDATE = "printer_update_result";
+
+    //Message type
+    private static final int MSG_PRINTING_RESULT = 1;
+    private static final int MSG_PRINTER_UPDATE_START = 2;
+    private static final int MSG_PRINTER_UPDATE_DONE = 3;
+    private static final int MSG_PRINTER_SET_BMP_NVRAM = 4;
+    private static final int MSG_PRINTER_DEL_BMP_NVRAM = 5;
 
     public PaydeviceModule(ReactApplicationContext reactContext) {
         super(reactContext);
@@ -71,6 +85,36 @@ public class PaydeviceModule extends ReactContextBaseJavaModule {
         }
     }
 
+    /**
+     * @brief Printing task class
+     */
+    private class PrintTask extends AsyncTask<PosSalesSlip, Void, Boolean> {
+        protected Boolean doInBackground(PosSalesSlip... templates) {
+            if (isCancelled()) {
+                return false;
+            }
+            try {
+                if (templates[0].validate()) {
+                    templates[0].print();
+                } else {
+                    Log.d(TAG, "mTemplate data illegal!");
+                    return false;
+                }
+            } catch (SmartPosException e) {
+                return false;
+            }
+            return true;
+        }
+
+        protected void onPostExecute(Boolean result) {
+            Bundle bundle = new Bundle();
+            bundle.putBoolean(KEY_PRINTING_RESULT, result);
+            Message msg = new Message();
+            msg.what = MSG_PRINTING_RESULT;
+            msg.setData(bundle);
+        }
+    }
+
     @ReactMethod
     public void checkPrinter(Callback callback) {
         initDevice();
@@ -78,6 +122,25 @@ public class PaydeviceModule extends ReactContextBaseJavaModule {
             mTemplate = new PosSalesSlip(this.reactContext, mPrinterManager);
         }
         int err = mTemplate.prepare();
+        callback.invoke(err);
+    }
+
+    @ReactMethod
+    public void  PrintText(String txtToPrint, Callback callback) {
+        initDevice();
+        if (mTemplate == null) {
+            mTemplate = new PosSalesSlip(this.reactContext, mPrinterManager);
+        }
+        int err = mTemplate.prepare();
+        if (err == 0) {
+
+            mTemplate.setTxtToPrint(txtToPrint);
+
+            mPrintTask = new PrintTask();
+            mPrintTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, mTemplate);
+        } else {
+            callback.invoke(err);
+        }
         callback.invoke(err);
     }
 }
