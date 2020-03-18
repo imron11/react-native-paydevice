@@ -88,12 +88,10 @@ public class PosSalesSlip {
                 mPrinterManager.setStringEncoding("CP437");
             }
 
-            mPrinterManager.cmdSetPrintMode(PrinterManager.FONT_DOUBLE_HEIGHT
-                    |PrinterManager.FONT_DOUBLE_WIDTH
-                    |PrinterManager.FONT_EMPHASIZED);
+            mPrinterManager.cmdSetPrintMode(PrinterManager.FONT_DEFAULT);
             mPrinterManager.cmdSetAlignMode(PrinterManager.ALIGN_MIDDLE);
             mPrinterManager.cmdLineFeed();
-            mPrinterManager.sendData("");
+            mPrinterManager.sendData(txtToPrint);
             mPrinterManager.cmdLineFeed();
         } catch (SmartPosException e) {
         }
