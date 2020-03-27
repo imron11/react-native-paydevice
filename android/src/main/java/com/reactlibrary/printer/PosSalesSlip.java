@@ -71,7 +71,10 @@ public class PosSalesSlip {
             mPrinterManager.cmdSetHeatingParam(15, 100, 10);
         }
 
-        printLogo();
+        if(mainLogoToPrint != null){
+            printLogo();
+        }
+
         printTemplate();
 
         mPrinterManager.cmdLineFeed(3);
