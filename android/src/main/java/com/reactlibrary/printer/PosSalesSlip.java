@@ -115,34 +115,31 @@ public class PosSalesSlip {
     }
 
     //print text
-    public void printTextByBitmap(String str, Layout.Alignment align, int size, float spacingmult) {
-        final int bmpWidth = mPrinterManager.getDotsPerLine();
-        TextPaint textPaint = new TextPaint();
-        textPaint.setColor(Color.BLACK);
-        textPaint.setStyle(Paint.Style.FILL_AND_STROKE);
-        //textPaint.setAntiAlias(true);
-        textPaint.setStrokeCap(Paint.Cap.SQUARE);
-        textPaint.setStrokeWidth(0);
-        textPaint.setTextSize(size);
-        Typeface font = Typeface.create(Typeface.SANS_SERIF, Typeface.NORMAL);
-        textPaint.setTypeface(font);
-        //line warp
-        StaticLayout staticLayout = new StaticLayout(str, textPaint, bmpWidth, align, spacingmult, 0.0f, false);
-        Paint.FontMetrics fontMetrics = textPaint.getFontMetrics();
-        final float yPos = fontMetrics.descent-fontMetrics.ascent-size;
-        final int bmpHeight = Math.round(staticLayout.getLineCount()*(fontMetrics.descent-fontMetrics.ascent)+yPos);
-        Bitmap bmp = Bitmap.createBitmap(bmpWidth, bmpHeight, Bitmap.Config.ARGB_8888);
-        Canvas canvas = new Canvas(bmp);
-        canvas.drawColor(Color.WHITE);
-        canvas.translate(0, yPos);
-        staticLayout.draw(canvas);
-
-        //Log.d(TAG,"lines:"+staticLayout.getLineCount()+" bmpHeight:"+bmpHeight);
-        //Log.d(TAG,"top:"+fontMetrics.top+" leading:"+fontMetrics.leading+" ascent:"+fontMetrics.ascent
-        //		+" yPos:"+yPos+" descent:"+fontMetrics.descent+" bottom:"+fontMetrics.bottom);
-
+    public void printText(String str, int size) {
         try {
-            mPrinterManager.cmdBitmapPrintEx(bmp, 0, 0);
+            Locale locale = mContext.getResources().getConfiguration().locale;
+            String language = locale.getLanguage();
+            boolean leftIsDoubleByte = false;
+
+            if (language.endsWith("zh")) {
+                mPrinterManager.cmdSetPrinterLanguage(PrinterManager.CODE_PAGE_GB18030);
+                mPrinterManager.setStringEncoding("GB18030");
+                leftIsDoubleByte = true;
+            } else {
+                mPrinterManager.cmdSetPrinterLanguage(PrinterManager.CODE_PAGE_CP437);
+                mPrinterManager.setStringEncoding("CP437");
+            }
+
+            // set size
+            if (size == 1) {
+                mPrinterManager.cmdSetPrintMode(PrinterManager.FONT_DOUBLE_HEIGHT);
+            } else {
+                mPrinterManager.cmdSetPrintMode(PrinterManager.FONT_DEFAULT);
+            }
+
+            mPrinterManager.cmdSetAlignMode(PrinterManager.ALIGN_MIDDLE);
+            mPrinterManager.sendData(str);
+            mPrinterManager.cmdLineFeed();
         } catch (SmartPosException e) {
         }
     }

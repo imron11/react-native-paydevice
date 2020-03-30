@@ -3,6 +3,7 @@ package com.reactlibrary;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Message;
+import android.text.Layout;
 import android.util.Log;
 
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -126,38 +127,18 @@ public class PaydeviceModule extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-    public void setMainLogoToPrint(String mainLogoToPrint){
-        mTemplate.setMainLogoToPrint(mainLogoToPrint);
+    public void printText(String txtToPrint){
+        this.doPrint(txtToPrint);
     }
 
-    @ReactMethod
-    public void setTextToPrint(String txtToPrint){
-        mTemplate.setTxtToPrint(txtToPrint);
-    }
-
-    @ReactMethod
-    public void setFooterLogoToPrint(String footerLogoToPrint) {
-        mTemplate.setFooterLogoToPrint(footerLogoToPrint);
-    }
-
-    @ReactMethod
-    public void setTxtFooterToPrint(String txtFooterToPrint) {
-        mTemplate.setTxtFooterToPrint(txtFooterToPrint);
-    }
-
-    @ReactMethod
-    public void  doPrint(Callback callback) {
+    public void  doPrint(String txt) {
         initDevice();
         if (mTemplate == null) {
             mTemplate = new PosSalesSlip(this.reactContext, mPrinterManager);
         }
         int err = mTemplate.prepare();
         if (err == 0) {
-            mPrintTask = new PrintTask();
-            mPrintTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, mTemplate);
-        } else {
-            callback.invoke(err);
+            mTemplate.printText(txt, 0);
         }
-        callback.invoke(err);
     }
 }
