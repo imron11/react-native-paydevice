@@ -12,6 +12,8 @@ import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.Callback;
 
 // SDK PayDevice
+import com.facebook.react.bridge.ReadableArray;
+import com.facebook.react.bridge.ReadableMap;
 import com.paydevice.smartpos.sdk.SmartPosException;
 import com.paydevice.smartpos.sdk.printer.PrinterManager;
 import com.paydevice.smartpos.sdk.printer.Printer;
@@ -20,6 +22,8 @@ import com.paydevice.smartpos.sdk.printer.SerialPortPrinter;
 import com.paydevice.smartpos.sdk.cashdrawer.CashDrawer;
 
 import com.reactlibrary.printer.PosSalesSlip;
+
+import javax.annotation.Nullable;
 
 public class PaydeviceModule extends ReactContextBaseJavaModule {
 
@@ -127,18 +131,25 @@ public class PaydeviceModule extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-    public void printText(String txtToPrint){
-        this.doPrint(txtToPrint);
+    public void printText(String txtToPrint, @Nullable ReadableMap options){
+        int sizeText = 0;
+
+        // check size
+        if (options != null) {
+            sizeText = options.hasKey("size") ? options.getInt("size") : 0;
+        }
+
+        this.doPrintText(txtToPrint, sizeText);
     }
 
-    public void  doPrint(String txt) {
+    public void  doPrintText(String txt, int size) {
         initDevice();
         if (mTemplate == null) {
             mTemplate = new PosSalesSlip(this.reactContext, mPrinterManager);
         }
         int err = mTemplate.prepare();
         if (err == 0) {
-            mTemplate.printText(txt, 0);
+            mTemplate.printText(txt, size);
         }
     }
 }
