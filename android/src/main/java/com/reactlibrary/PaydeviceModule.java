@@ -1,9 +1,12 @@
 package com.reactlibrary;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Message;
 import android.text.Layout;
+import android.util.Base64;
 import android.util.Log;
 
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -34,7 +37,6 @@ public class PaydeviceModule extends ReactContextBaseJavaModule {
     private final ReactApplicationContext reactContext;
 
     // PayDevice Variable
-    private PrintTask mPrintTask = null;
     private Printer mPrinter = null;
 
     private static final String KEY_PRINTING_RESULT = "printing_result";
@@ -90,36 +92,6 @@ public class PaydeviceModule extends ReactContextBaseJavaModule {
         }
     }
 
-    /**
-     * @brief Printing task class
-     */
-    private class PrintTask extends AsyncTask<PosSalesSlip, Void, Boolean> {
-        protected Boolean doInBackground(PosSalesSlip... templates) {
-            if (isCancelled()) {
-                return false;
-            }
-            try {
-                if (templates[0].validate()) {
-                    templates[0].print();
-                } else {
-                    Log.d(TAG, "mTemplate data illegal!");
-                    return false;
-                }
-            } catch (SmartPosException e) {
-                return false;
-            }
-            return true;
-        }
-
-        protected void onPostExecute(Boolean result) {
-            Bundle bundle = new Bundle();
-            bundle.putBoolean(KEY_PRINTING_RESULT, result);
-            Message msg = new Message();
-            msg.what = MSG_PRINTING_RESULT;
-            msg.setData(bundle);
-        }
-    }
-
     @ReactMethod
     public void checkPrinter(Callback callback) {
         initDevice();
@@ -142,7 +114,15 @@ public class PaydeviceModule extends ReactContextBaseJavaModule {
         this.doPrintText(txtToPrint, sizeText);
     }
 
-    public void  doPrintText(String txt, int size) {
+    @ReactMethod
+    public  void printPic(String base64encodeStr, @Nullable ReadableMap options){
+        byte[] decodedString = Base64.decode(base64encodeStr, Base64.DEFAULT);
+        Bitmap img = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
+
+        this.doPrintPic(img);
+    }
+
+    private void doPrintText(String txt, int size) {
         initDevice();
         if (mTemplate == null) {
             mTemplate = new PosSalesSlip(this.reactContext, mPrinterManager);
@@ -150,6 +130,17 @@ public class PaydeviceModule extends ReactContextBaseJavaModule {
         int err = mTemplate.prepare();
         if (err == 0) {
             mTemplate.printText(txt, size);
+        }
+    }
+
+    private void doPrintPic(Bitmap img){
+        initDevice();
+        if (mTemplate == null) {
+            mTemplate = new PosSalesSlip(this.reactContext, mPrinterManager);
+        }
+        int err = mTemplate.prepare();
+        if (err == 0) {
+            mTemplate.printPic(img);
         }
     }
 }
