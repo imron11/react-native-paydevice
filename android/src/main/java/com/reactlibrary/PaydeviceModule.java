@@ -111,7 +111,7 @@ public class PaydeviceModule extends ReactContextBaseJavaModule {
             sizeText = options.hasKey("size") ? options.getInt("size") : 0;
         }
 
-        this.doPrintText(txtToPrint, sizeText);
+        mTemplate.printText(txtToPrint, sizeText);
     }
 
     @ReactMethod
@@ -119,28 +119,6 @@ public class PaydeviceModule extends ReactContextBaseJavaModule {
         byte[] decodedString = Base64.decode(base64encodeStr, Base64.DEFAULT);
         Bitmap img = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
 
-        this.doPrintPic(img);
-    }
-
-    private void doPrintText(String txt, int size) {
-        initDevice();
-        if (mTemplate == null) {
-            mTemplate = new PosSalesSlip(this.reactContext, mPrinterManager);
-        }
-        int err = mTemplate.prepare();
-        if (err == 0) {
-            mTemplate.printText(txt, size);
-        }
-    }
-
-    private void doPrintPic(Bitmap img){
-        initDevice();
-        if (mTemplate == null) {
-            mTemplate = new PosSalesSlip(this.reactContext, mPrinterManager);
-        }
-        int err = mTemplate.prepare();
-        if (err == 0) {
-            mTemplate.printPic(img);
-        }
+        mTemplate.printPic(img);
     }
 }
