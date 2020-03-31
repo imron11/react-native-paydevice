@@ -116,9 +116,17 @@ public class PaydeviceModule extends ReactContextBaseJavaModule {
 
     @ReactMethod
     public  void printPic(String base64encodeStr, @Nullable ReadableMap options){
+        int newWidth = 0;
+
         byte[] decodedString = Base64.decode(base64encodeStr, Base64.DEFAULT);
         Bitmap img = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
 
-        mTemplate.printPic(img);
+        //check width
+        if (options != null) {
+            newWidth = options.hasKey("width") ? options.getInt("width") : 0;
+        }
+
+
+        mTemplate.printPic(img, newWidth);
     }
 }

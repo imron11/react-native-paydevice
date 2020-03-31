@@ -82,9 +82,20 @@ public class PosSalesSlip {
     }
 
     //print pic
-    public void printPic(Bitmap img) {
+    public void printPic(Bitmap imgToPrint, int newWidth) {
         try {
+            int width = 0;
+            Bitmap img = imgToPrint;
             final int totalDots = mPrinterManager.getDotsPerLine();
+
+            if (img.getWidth() >= totalDots) {
+                img = Bitmap.createScaledBitmap(img, 328, (328 * img.getHeight())/img.getWidth(), true);
+            }
+
+            if (newWidth != 0) {
+                img = Bitmap.createScaledBitmap(img, newWidth, (newWidth * img.getHeight())/img.getWidth(), true);
+            }
+
             int xPos = (totalDots - img.getWidth()) >> 1;//horizontal centre
             int yPos = 0;
 
