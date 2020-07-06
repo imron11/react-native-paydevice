@@ -1,9 +1,14 @@
 package com.reactlibrary;
 
+import android.app.Service;
+import android.content.ComponentName;
+import android.content.Intent;
+import android.content.ServiceConnection;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.os.Message;
 import android.text.Layout;
 import android.util.Base64;
@@ -28,6 +33,8 @@ import com.reactlibrary.printer.PosSalesSlip;
 
 import javax.annotation.Nullable;
 
+import com.reactlibrary.SecondaryDisplayService.CustomerListener;
+
 public class PaydeviceModule extends ReactContextBaseJavaModule {
 
     private static String TAG = "PayDevice";
@@ -48,6 +55,8 @@ public class PaydeviceModule extends ReactContextBaseJavaModule {
     private static final int MSG_PRINTER_UPDATE_DONE = 3;
     private static final int MSG_PRINTER_SET_BMP_NVRAM = 4;
     private static final int MSG_PRINTER_DEL_BMP_NVRAM = 5;
+
+    private boolean mLogoShowing = false;
 
     public PaydeviceModule(ReactApplicationContext reactContext) {
         super(reactContext);
@@ -128,5 +137,53 @@ public class PaydeviceModule extends ReactContextBaseJavaModule {
 
 
         mTemplate.printPic(img, newWidth);
+    }
+
+
+    // Secondary Display
+    private SecondaryDisplayService mService = null;
+    private ServiceConnection mConn = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName componentName, IBinder service) {
+            mService = ((SecondaryDisplayService.MsgBinder) service).getService();
+            mService.setCustomerListener(new CustomerListener() {
+                @Override
+                public void onConfirm(String input) {
+                    Log.d(TAG, "Customer input:" + input);
+                }
+            });
+
+            if (mService.isLogoPlaying()) {
+                Log.d(TAG, "logo playing");
+            }
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName componentName) {
+            if (mService != null) {
+                mService.setCustomerListener(null);
+                mService = null;
+            }
+        }
+    };
+
+    @ReactMethod
+    public void showLogo() {
+
+        Intent intent = new Intent(this.reactContext, SecondaryDisplayService.class);
+        getReactApplicationContext().startService(intent);
+        getReactApplicationContext().bindService(intent, mConn, Service.BIND_AUTO_CREATE);
+
+        if (!mLogoShowing) {
+            mLogoShowing = true;
+            if (mService != null) {
+                mService.play(SecondaryDisplayService.TYPE_LOGO);
+            }
+        } else {
+            if (mService != null) {
+                mService.stop();
+            }
+            mLogoShowing = false;
+        }
     }
 }
